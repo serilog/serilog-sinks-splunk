@@ -12,91 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Serilog.Core;
-using Serilog.Events;
 using Serilog.Formatting;
-using Splunk.Logging;
 using System;
-using System.IO;
-using System.Text;
 
 namespace Serilog.Sinks.Splunk
 {
     /// <summary>
     /// A sink that logs to Splunk over TCP
     /// </summary>
-    public class TcpSink : ILogEventSink, IDisposable
+    [Obsolete("Use SocketSink")]
+    public class TcpSink : SocketSink
     {
-        private readonly ITextFormatter _formatter;
-        private readonly SplunkTcpSinkConnectionInfo _connectionInfo;
-        private bool disposedValue = false;
-
-        private TcpSocketWriter _writer;
-
-        /// <summary>
-        /// Creates an instance of the Splunk TCP Sink.
-        /// </summary>
-        /// <param name="connectionInfo">Connection info used for connecting against Splunk.</param>
-        /// <param name="formatProvider">Optional format provider</param>
-        /// <param name="renderTemplate">If true, the message template will be rendered</param>
-        public TcpSink(SplunkTcpSinkConnectionInfo connectionInfo, IFormatProvider formatProvider = null, bool renderTemplate = true)
-            : this(connectionInfo, CreateDefaultFormatter(formatProvider, renderTemplate))
-        {
-        }
-
-        /// <summary>
-        /// Creates an instance of the Splunk TCP Sink.
-        /// </summary>
-        /// <param name="connectionInfo">Connection info used for connecting against Splunk.</param>
-        /// <param name="formatter">Custom formatter to use if you e.g. do not want to use the JsonFormatter.</param>
+        /// <inheritdoc/>
         public TcpSink(SplunkTcpSinkConnectionInfo connectionInfo, ITextFormatter formatter)
+            : base(connectionInfo, formatter)
         {
-            _connectionInfo = connectionInfo;
-            _formatter = formatter;
-            _writer = CreateSocketWriter(connectionInfo);
         }
 
         /// <inheritdoc/>
-        protected virtual void Dispose(bool disposing)
+        public TcpSink(SplunkTcpSinkConnectionInfo connectionInfo, IFormatProvider formatProvider = null, bool renderTemplate = true)
+            : base(connectionInfo, formatProvider, renderTemplate)
         {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    _writer?.Dispose();
-                    _writer = null;
-                }
-                disposedValue = true;
-            }
-        }
-
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        /// <inheritdoc/>
-        public void Emit(LogEvent logEvent)
-        {
-            var sb = new StringBuilder();
-
-            using (var sw = new StringWriter(sb))
-                _formatter.Format(logEvent, sw);
-
-            _writer.Enqueue(sb.ToString());
-        }
-
-        private static TcpSocketWriter CreateSocketWriter(SplunkTcpSinkConnectionInfo connectionInfo)
-        {
-            var reconnectionPolicy = new ExponentialBackoffTcpReconnectionPolicy();
-
-            return new TcpSocketWriter(connectionInfo.Host, connectionInfo.Port, reconnectionPolicy, connectionInfo.MaxQueueSize);
-        }
-
-        private static SplunkJsonFormatter CreateDefaultFormatter(IFormatProvider formatProvider, bool renderTemplate)
-        {
-            return new SplunkJsonFormatter(renderTemplate, formatProvider);
         }
     }
 }

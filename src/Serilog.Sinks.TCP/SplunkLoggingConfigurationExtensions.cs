@@ -37,7 +37,7 @@ namespace Serilog
         public static LoggerConfiguration SplunkViaTcp(this LoggerSinkConfiguration loggerConfiguration, SplunkTcpSinkConnectionInfo connectionInfo,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum, IFormatProvider formatProvider = null, bool renderTemplate = true)
         {
-            var sink = new TcpSink(connectionInfo, formatProvider, renderTemplate);
+            var sink = new SocketSink(connectionInfo, formatProvider, renderTemplate);
 
             return loggerConfiguration.Sink(sink, restrictedToMinimumLevel);
         }
@@ -53,7 +53,7 @@ namespace Serilog
         public static LoggerConfiguration SplunkViaTcp(this LoggerSinkConfiguration loggerConfiguration, SplunkTcpSinkConnectionInfo connectionInfo,
             ITextFormatter formatter, LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum)
         {
-            var sink = new TcpSink(connectionInfo, formatter);
+            var sink = new SocketSink(connectionInfo, formatter);
 
             return loggerConfiguration.Sink(sink, restrictedToMinimumLevel);
         }

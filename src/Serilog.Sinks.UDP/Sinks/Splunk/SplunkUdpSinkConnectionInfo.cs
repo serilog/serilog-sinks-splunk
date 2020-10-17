@@ -13,43 +13,33 @@
 // limitations under the License.
 
 using System.Net;
+using System.Net.Sockets;
 
 namespace Serilog.Sinks.Splunk
 {
+
     /// <summary>
     /// Defines connection info used to connect against Splunk
     /// using UDP.
     /// </summary>
-    public class SplunkUdpSinkConnectionInfo
+    public class SplunkUdpSinkConnectionInfo : SplunkSocketSinkConnectionInfo
     {
-        /// <summary>
-        /// Splunk host.
-        /// </summary>
-        public IPAddress Host { get; }
+        /// <inheritdoc/>
+        protected override SocketType SocketType => SocketType.Dgram;
 
-        /// <summary>
-        /// Splunk port.
-        /// </summary>
-        public int Port { get; }
+        /// <inheritdoc/>
+        protected override ProtocolType ProtocolType => ProtocolType.Udp;
 
-        /// <summary>
-        /// Creates an instance of <see cref="SplunkUdpSinkConnectionInfo"/> used
-        /// for defining connection info for connecting using UDP against Splunk.
-        /// </summary>
-        /// <param name="host">Splunk host.</param>
-        /// <param name="port">Splunk UDP port.</param>
-        public SplunkUdpSinkConnectionInfo(string host, int port) : this(IPAddress.Parse(host), port) { }
-
-        /// <summary>
-        /// Creates an instance of <see cref="SplunkUdpSinkConnectionInfo"/> used
-        /// for defining connection info for connecting using UDP against Splunk.
-        /// </summary>
-        /// <param name="host">Splunk host.</param>
-        /// <param name="port">Splunk UDP port.</param>
-        public SplunkUdpSinkConnectionInfo(IPAddress host, int port)
+        /// <inheritdoc/>
+        public SplunkUdpSinkConnectionInfo(string host, int port)
+            : base(host, port)
         {
-            Host = host;
-            Port = port;
+        }
+
+        /// <inheritdoc/>
+        public SplunkUdpSinkConnectionInfo(IPAddress address, int port)
+            : base(address, port)
+        {
         }
     }
 }

@@ -41,7 +41,7 @@ namespace Serilog
             IFormatProvider formatProvider = null,
             bool renderTemplate = true)
         {
-            var sink = new UdpSink(connectionInfo, formatProvider, renderTemplate);
+            var sink = new SocketSink(connectionInfo, formatProvider, renderTemplate);
 
             return loggerConfiguration.Sink(sink, restrictedToMinimumLevel);
         }
@@ -60,8 +60,8 @@ namespace Serilog
             ITextFormatter formatter,
             LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum)
         {
-            var sink = new UdpSink(connectionInfo, formatter);
-            
+            var sink = new SocketSink(connectionInfo, formatter);
+
             return loggerConfiguration.Sink(sink, restrictedToMinimumLevel);
         }
     }
